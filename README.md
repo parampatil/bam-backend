@@ -423,7 +423,66 @@ This is a Flask-based web application for managing users, research papers, and a
     }
     ```
 
-## Notes
+## Database Structure
+
+The database used in this application is `bam.db`. It contains the following tables:
+
+### Users Table
+
+- **Table Name:** `users`
+- **Description:** Stores user information.
+
+| Column Name              | Data Type | Constraints                           | Description                           |
+|--------------------------|-----------|--------------------------------------|---------------------------------------|
+| `user_id`                | INTEGER   | PRIMARY KEY, AUTOINCREMENT            | Unique identifier for each user.      |
+| `user_email`             | TEXT      | NOT NULL, UNIQUE                      | User's email address.                 |
+| `user_first_name`        | TEXT      | NOT NULL                              | User's first name.                    |
+| `user_last_name`         | TEXT      | NOT NULL                              | User's last name.                     |
+| `user_password`          | TEXT      | NOT NULL                              | User's hashed password.               |
+| `user_image`             | TEXT      |                                      | URL or path to user's profile image.  |
+| `user_registration_time` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP             | Timestamp of user registration.       |
+| `user_access`            | TEXT      | CHECK(user_access IN ('user', 'team', 'admin')), NOT NULL | User's access level (user, team, admin). |
+| `university`             | TEXT      |                                      | Name of the university the user is associated with. |
+| `collections_paper_ids`  | TEXT      |                                      | Comma-separated list of paper IDs in the user's collection. |
+
+### Research Papers Table
+
+- **Table Name:** `research_papers`
+- **Description:** Stores information about research papers.
+
+| Column Name              | Data Type | Constraints                           | Description                           |
+|--------------------------|-----------|--------------------------------------|---------------------------------------|
+| `paper_id`               | INTEGER   | PRIMARY KEY, AUTOINCREMENT            | Unique identifier for each paper.     |
+| `paper_created_by_user_id` | INTEGER | NOT NULL, FOREIGN KEY REFERENCES `users(user_id)` | User who created the paper.           |
+| `short_paper_title`      | TEXT      | NOT NULL                              | Short title of the paper.             |
+| `short_description`      | TEXT      | NOT NULL                              | Short description of the paper.       |
+| `preview_image`          | TEXT      |                                      | URL or path to the paper's preview image. |
+| `authors_ids`            | TEXT      | NOT NULL                              | Comma-separated list of author IDs.   |
+| `paper_pdf_link`         | TEXT      | NOT NULL                              | URL link to the paper's PDF.          |
+| `paper_description`      | TEXT      | NOT NULL                              | Full description of the paper.        |
+
+### Authors Table
+
+- **Table Name:** `authors`
+- **Description:** Stores information about authors.
+
+| Column Name              | Data Type | Constraints                           | Description                           |
+|--------------------------|-----------|--------------------------------------|---------------------------------------|
+| `author_id`              | INTEGER   | PRIMARY KEY, AUTOINCREMENT            | Unique identifier for each author.    |
+| `author_first_name`      | TEXT      | NOT NULL                              | Author's first name.                 |
+| `author_last_name`       | TEXT      | NOT NULL                              | Author's last name.                  |
+| `author_image`           | TEXT      |                                      | URL or path to author's image.       |
+| `author_website`         | TEXT      |                                      | URL to the author's personal website. |
+
+## Notes for database setup
+
+- Ensure that `user_email` is unique in the `users` table.
+- `paper_created_by_user_id` in `research_papers` references `user_id` in the `users` table.
+- `authors_ids` in `research_papers` is a comma-separated list of `author_id` values from the `authors` table.
+
+
+
+## General Notes
 
 - Ensure that you update the `SECRET_KEY` in `app.py` to a secure value.
 - Replace `<repository-url>` and `<repository-directory>` with the actual URL and directory name of your repository.
