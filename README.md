@@ -1,4 +1,4 @@
-# Flask Application for Research Papers Management
+# Flask Application for Building A Mind website.
 
 This is a Flask-based web application for managing users, research papers, and authors. It includes features for user sign-up, sign-in, profile management, adding and listing research papers, and adding new authors.
 
