@@ -474,6 +474,10 @@ The database used in this application is `bam.db`. It contains the following tab
 | `author_image`           | TEXT      |                                      | URL or path to author's image.       |
 | `author_website`         | TEXT      |                                      | URL to the author's personal website. |
 
+## Deployment
+
+- Vercel URL: https://bam-backend-git-main-params-projects-b290fccc.vercel.app/
+
 ## Notes for database setup
 
 - Ensure that `user_email` is unique in the `users` table.
