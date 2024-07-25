@@ -13,8 +13,9 @@ def get_collections(current_user):
         paper_ids_list = [int(x) for x in collections_paper_ids.strip('[]').split(',')]
     else:
         paper_ids_list = []
+    result = {'collections_paper_ids': paper_ids_list}
     conn.close()
-    return jsonify(paper_ids_list)
+    return jsonify(result)
 
 @collection_bp.route('/api/collections/papers', methods=['GET'])
 @token_required

@@ -327,7 +327,7 @@ This is a Flask-based web application for managing users, research papers, and a
 
     ```json
     {
-        "collections_paper_ids": "string"
+        "collections_paper_ids": [integer]
     }
     ```
 
@@ -486,3 +486,9 @@ The database used in this application is `bam.db`. It contains the following tab
 
 - Ensure that you update the `SECRET_KEY` in `app.py` to a secure value.
 - Replace `<repository-url>` and `<repository-directory>` with the actual URL and directory name of your repository.
+
+## Issues / Enhancements
+
+- Add Publication date to the research papers table
+- Add List of Tags to the research papers
+- Add update paper method
