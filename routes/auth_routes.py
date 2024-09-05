@@ -22,7 +22,18 @@ def signup():
         conn.close()
 
     token = create_token(user_id)
-    return jsonify({'message': 'User created successfully', 'token': token})
+    
+    response = {
+        'message': 'Signed in successfully',
+        'token': token,
+        'user_first_name': data['user_first_name'],
+        'user_last_name': data['user_last_name'],
+        'user_image': data.get('user_image', ''),  
+        'user_access': 'user'
+    }
+    
+    return jsonify(response)
+
 
 @auth_bp.route('/api/signin', methods=['POST'])
 def signin():

@@ -1,6 +1,6 @@
 import sqlite3
 from werkzeug.security import generate_password_hash
-
+import json
 def populate_db():
     conn = sqlite3.connect('bam.db')
     c = conn.cursor()
@@ -30,18 +30,43 @@ def populate_db():
     VALUES (?, ?, ?, ?)
     ''', authors)
 
-    # Sample data for research papers
+    # Sample data for research papers (including paper_editor, paper_html, and paper_css)
     research_papers = [
-        (1, 'Sample Paper 1', 'This is a sample paper 1.', 'paper1.jpg', '1', 'http://example.com/sample1.pdf', '<p>This is the full description of sample paper 1.</p>'),
-        (2, 'Sample Paper 2', 'This is a sample paper 2.', 'paper2.jpg', '2', 'http://example.com/sample2.pdf', '<p>This is the full description of sample paper 2.</p>'),
-        (3, 'Sample Paper 3', 'This is a sample paper 3.', 'paper3.jpg', '1,2', 'http://example.com/sample3.pdf', '<p>This is the full description of sample paper 3.</p>')
+        (1, 'Sample Paper 1', 'Sample 1 desc.', 'p1.jpg', '1', 'http://example.com/sample1.pdf', 'Full desc 1', 'HTML 1', 'CSS 1', '2024-01-01', json.dumps({
+            'id': 1,
+            'title': 'Sample 1',
+            'date': '2024-01-01'
+        })),
+        
+        (2, 'Sample Paper 2', 'Sample 2 desc.', 'p2.jpg', '2', 'http://example.com/sample2.pdf', 'Full desc 2', 'HTML 2', 'CSS 2', '2024-02-01', json.dumps({
+            'id': 2,
+            'title': 'Sample 2',
+            'date': '2024-02-01'
+        })),
+        
+        (3, 'Sample Paper 3', 'Sample 3 desc.', 'p3.jpg', '1,2', 'http://example.com/sample3.pdf', 'Full desc 3', 'HTML 3', 'CSS 3', '2024-03-01', json.dumps({
+            'id': 3,
+            'title': 'Sample 3',
+            'date': '2024-03-01'
+        }))
     ]
 
-    # Insert sample research papers
     c.executemany('''
-    INSERT INTO research_papers (paper_created_by_user_id, short_paper_title, short_description, preview_image, authors_ids, paper_pdf_link, paper_description)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO research_papers (
+            paper_created_by_user_id, 
+            short_paper_title, 
+            short_description, 
+            preview_image, 
+            authors_ids, 
+            paper_pdf_link, 
+            paper_description, 
+            paper_html, 
+            paper_css, 
+            paper_publishDate, 
+            paper_editor
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', research_papers)
+
 
     conn.commit()
     conn.close()

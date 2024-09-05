@@ -4,6 +4,7 @@ def create_tables():
     conn = sqlite3.connect('bam.db')
     c = conn.cursor()
 
+    c.execute('DROP TABLE IF EXISTS users')
     # Create users table
     c.execute('''
     CREATE TABLE users (
@@ -20,7 +21,9 @@ def create_tables():
     )
     ''')
 
-    # Create research papers table
+    c.execute('DROP TABLE IF EXISTS research_papers')
+
+    # Create research papers table with paper_html and paper_css
     c.execute('''
     CREATE TABLE research_papers (
         paper_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,9 +34,29 @@ def create_tables():
         authors_ids TEXT NOT NULL,
         paper_pdf_link TEXT NOT NULL,
         paper_description TEXT NOT NULL,
+        paper_html TEXT,         
+        paper_css TEXT,            
+        paper_publishDate TEXT NOT NULL,
+        paper_editor JSON, 
         FOREIGN KEY (paper_created_by_user_id) REFERENCES users(user_id)
     )
-    ''')
+''')
+
+
+    # Verify the table structure
+    c.execute('PRAGMA table_info(research_papers)')
+    columns = c.fetchall()
+
+    # Print the column details
+    for column in columns:
+        print(column)
+
+
+
+
+
+    c.execute('DROP TABLE IF EXISTS authors')
+
 
     # Create authors table
     c.execute('''
