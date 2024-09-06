@@ -9,8 +9,8 @@ author_bp = Blueprint('author', __name__)
 def add_author():
     data = request.get_json()
     conn = get_db_connection()
-    conn.execute('INSERT INTO authors (author_first_name, author_last_name, author_image, author_website) VALUES (?, ?, ?, ?)',
-                 (data['author_first_name'], data['author_last_name'], data['author_image'], data['author_website']))
+    conn.execute('INSERT INTO authors (author_first_name, author_last_name, author_image) VALUES (?, ?, ?, ?)',
+                 (data['author_first_name'], data['author_last_name'], data['author_image']))
     conn.commit()
     author_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
     conn.close()
@@ -48,21 +48,29 @@ def list_authors():
     conn.close()
     return jsonify(result)
 
-@author_bp.route('/api/authors/', methods=['PUT'])
-def update_author():
+@author_bp.route('/api/authors/<int:author_id>', methods=['PUT'])
+def update_author(author_id):
+    # Authorization header
+    auth_header = request.headers.get('Authorization')
+    # if auth_header is None or not auth_header.startswith('Bearer '):
+    #     return jsonify({'message': 'Unauthorized'}), 401
+
+    # token = auth_header.split(' ')[1]
+    # if not is_admin(token):
+    #     return jsonify({'message': 'Forbidden'}), 403
+
     data = request.get_json()
-    author_id = data.get('author_id')
     author_first_name = data.get('author_first_name')
     author_last_name = data.get('author_last_name')
     author_image = data.get('author_image')
     
-    if not author_id or not author_first_name or not author_last_name or not author_image:
+    if not author_first_name or not author_last_name or not author_image:
         return jsonify({'message': 'Missing required fields'}), 400
 
     conn = get_db_connection()
     try:
         # Update the author's information in the database
-        conn.execute('''
+        result = conn.execute('''
             UPDATE authors
             SET author_first_name = ?, author_last_name = ?, author_image = ?
             WHERE author_id = ?
@@ -71,7 +79,7 @@ def update_author():
         conn.commit()
 
         # Check if the author was updated
-        if conn.total_changes == 0:
+        if result.rowcount == 0:
             return jsonify({'message': 'Author not found'}), 404
 
     except Exception as e:
