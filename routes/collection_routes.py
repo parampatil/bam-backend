@@ -33,12 +33,12 @@ def get_collections_papers(current_user):
         if paper:
             paper_data = {
                 'paper_id': paper['paper_id'],
-                'created_by': paper['paper_created_by_user_id'],
+                # 'created_by': paper['paper_created_by_user_id'],
                 'short_title': paper['short_paper_title'],
                 'short_description': paper['short_description'],
                 'preview_image': paper['preview_image'],
                 'authors': [],
-                'paper_pdf_link': paper['paper_pdf_link']
+                # 'paper_pdf_link': paper['paper_pdf_link']
             }
 
             author_ids = paper['authors_ids']
@@ -52,7 +52,7 @@ def get_collections_papers(current_user):
                         'first_name': author['author_first_name'],
                         'last_name': author['author_last_name'],
                         'image': author['author_image'],
-                        'website': author['author_website']
+                        # 'website': author['author_website']
                     }
                     paper_data['authors'].append(author_data)
             
