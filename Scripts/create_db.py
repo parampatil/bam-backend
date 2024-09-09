@@ -27,16 +27,16 @@ def create_tables():
     c.execute('''
     CREATE TABLE research_papers (
         paper_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        paper_created_by_user_id INTEGER NOT NULL,
-        short_paper_title TEXT NOT NULL,
-        short_description TEXT NOT NULL,
+        paper_created_by_user_id INTEGER,
+        short_paper_title TEXT,
+        short_description TEXT,
         preview_image TEXT,
-        authors_ids TEXT NOT NULL,
-        paper_pdf_link TEXT NOT NULL,
-        paper_description TEXT NOT NULL,
+        authors_ids TEXT,
+        paper_pdf_link TEXT,
+        paper_description TEXT,
         paper_html TEXT,         
         paper_css TEXT,            
-        paper_publishDate TEXT NOT NULL,
+        paper_publishDate TEXT,
         paper_editor JSON, 
         FOREIGN KEY (paper_created_by_user_id) REFERENCES users(user_id)
     )

@@ -90,5 +90,28 @@ def update_author(author_id):
     return jsonify({'message': 'Author updated successfully'})
 
 
+@author_bp.route('/api/authors/<int:author_id>', methods=['DELETE'])
+
+def delete_author(author_id):
+    # user_id = get_jwt_identity()  # Get the user id from the JWT token
+    # if not is_admin(user_id):
+    #     return jsonify({"message": "Unauthorized"}), 403
+    conn = get_db_connection()
+   
+    try:
+        conn.execute('DELETE FROM authors WHERE author_id = ?', (author_id,))
+        conn.commit()
+
+        if conn.rowcount == 0:
+            return jsonify({"message": "Author not found"}), 404
+
+        return jsonify({"message": "Author deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"message": "Error deleting author", "error": str(e)}), 500
+    finally:
+        conn.close()
+
+
+
 
 

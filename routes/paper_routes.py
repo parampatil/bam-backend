@@ -337,6 +337,89 @@ def delete_paper(paper_id):
 
 
 
+@paper_bp.route('/api/papers/publish/<int:paper_id>', methods=['PUT'])
+def publish_paper(paper_id):
+    # Authorization header
+    # auth_header = request.headers.get('Authorization')
+    # if auth_header is None or not auth_header.startswith('Bearer '):
+    #     return jsonify({'message': 'Unauthorized'}), 401
+
+    # token = auth_header.split(' ')[1]
+    # if not is_admin(token):
+    #     return jsonify({'message': 'Forbidden'}), 403
+
+    data = request.get_json()
+    paper_id_from_body = data.get('paper_id')
+    paper_description = data.get('paper_description')
+    
+    if not paper_id_from_body or not paper_description:
+        return jsonify({'message': 'Missing required fields'}), 400
+
+    paper_html = paper_description.get('paper_html')
+    paper_css = paper_description.get('paper_css')
+
+    if not paper_html or not paper_css:
+        return jsonify({'message': 'Missing required fields'}), 400
+
+    if paper_id != paper_id_from_body:
+        return jsonify({'message': 'Paper ID mismatch'}), 400
+
+    conn = get_db_connection()
+    try:
+        # Publish the paper by updating the paper description in the database
+        result = conn.execute('''
+            UPDATE research_papers
+            SET paper_html = ?, paper_css = ?
+            WHERE paper_id = ?
+        ''', (paper_html, paper_css, paper_id))
+        
+        conn.commit()
+
+        # Check if the paper was updated
+        if result.rowcount == 0:
+            return jsonify({'message': 'Paper not found'}), 404
+
+    except Exception as e:
+        conn.close()
+        return jsonify({'message': str(e)}), 500
+
+    conn.close()
+    return jsonify({'message': 'Paper published successfully'})
+
+
+@paper_bp.route('/api/papers/createcard', methods=['POST'])
+def create_paper_card():
+    data = request.get_json()
+
+    paper_id = data.get('paper_id')
+    short_paper_title = data.get('short_paper_title')
+    paper_publishDate = data.get('paper_publishDate')
+    short_description = data.get('short_description')
+    preview_image = data.get('preview_image')
+    authors_ids = data.get('authors_ids')
+
+   
+
+    conn = get_db_connection()
+    try:
+        # Insert a new paper card into the database
+        conn.execute('''
+            INSERT INTO research_papers (paper_id, short_paper_title, paper_publishDate, short_description, preview_image, authors_ids, paper_description, paper_editor)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (paper_id, short_paper_title, paper_publishDate, short_description, preview_image, authors_ids, '', ''))
+
+        conn.commit()
+
+    except Exception as e:
+        conn.close()
+        return jsonify({'message': str(e)}), 500
+
+    conn.close()
+    return jsonify({'message': 'Paper created successfully'}), 201
+
+
+
+
 
 @paper_bp.route('/api/papers', methods=['POST'])
 @token_required
