@@ -6,6 +6,7 @@ This is a Flask-based web application for managing users, research papers, and a
 
 - Python 3.x
 - pip (Python package installer)
+- pip install flask-swagger-ui
 
 ## Installation
 
@@ -496,8 +497,7 @@ The database used in this application is `bam.db`. It contains the following tab
 
 ## Issues / Enhancements
 
-- [ ] Add Publication date to the research papers table 
-- [ ] Add List of Tags to the research papers (I am thinking of using a new library for creating paper description, so hold this update for now)
-- [ ] Add update paper method.
-- [ ] Write and endpoint to delete an existing user.
+- [x] Add Publication date to the research papers table 
+- [x] Add update paper method.
+- [x] Write and endpoint to delete an existing user.
 - [ ] Write test for each endpopint in postman.

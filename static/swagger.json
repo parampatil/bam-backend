@@ -1,0 +1,783 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Paper Editor API",
+    "description": "API for Paper Editor application",
+    "version": "1.0.0"
+  },
+  "tags": [
+    { "name": "Authentication", "description": "User authentication" },
+    { "name": "Authors", "description": "Authors management" },
+    { "name": "Profile", "description": "User profile management" },
+    { "name": "Collections", "description": "User collections management" },
+    { "name": "Papers", "description": "Papers management" }
+  ],
+  "paths": {
+    "/api/signup": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Sign up a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful signup",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email already exists"
+          }
+        }
+      }
+    },
+    "/api/signin": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Sign in a user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SigninRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful signin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SigninResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/userimage": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get user image",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserImageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/isadmin": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Check if user is admin",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IsAdminResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authors": {
+      "post": {
+        "tags": ["Authors"],
+        "summary": "Add a new author",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAuthorRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Author added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddAuthorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authors/all": {
+      "get": {
+        "tags": ["Authors"],
+        "summary": "List all authors",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authors/{author_id}": {
+      "put": {
+        "tags": ["Authors"],
+        "summary": "Update an author",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "author_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAuthorRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Author updated successfully"
+          },
+          "404": {
+            "description": "Author not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Authors"],
+        "summary": "Delete an author",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "author_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Author deleted successfully"
+          },
+          "404": {
+            "description": "Author not found"
+          }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "tags": ["Profile"],
+        "summary": "Get user profile",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Profile"],
+        "summary": "Update user profile",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully"
+          },
+          "400": {
+            "description": "Email already exists"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Profile"],
+        "summary": "Delete user profile",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Profile deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/change-password": {
+      "put": {
+        "tags": ["Profile"],
+        "summary": "Change user password",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully"
+          },
+          "400": {
+            "description": "Incorrect old password"
+          }
+        }
+      }
+    },
+    "/api/collections": {
+      "get": {
+        "tags": ["Collections"],
+        "summary": "Get user collections",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Collections"],
+        "summary": "Add paper to collection",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToCollectionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paper added to collection"
+          }
+        }
+      }
+    },
+    "/api/collections/papers": {
+      "get": {
+        "tags": ["Collections"],
+        "summary": "Get papers in user collections",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaperInCollection"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{paper_id}": {
+      "delete": {
+        "tags": ["Collections"],
+        "summary": "Remove paper from collection",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "paper_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paper removed from collection"
+          }
+        }
+      }
+    },
+    "/api/papers": {
+      "get": {
+        "tags": ["Papers"],
+        "summary": "List all papers",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Paper"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/papers/{paper_id}": {
+      "get": {
+        "tags": ["Papers"],
+        "summary": "Get paper by ID",
+        "parameters": [
+          {
+            "name": "paper_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaperDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paper not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Papers"],
+        "summary": "Delete paper",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "paper_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paper deleted successfully"
+          },
+          "400": {
+            "description": "Missing paper_id"
+          }
+        }
+      }
+    },
+    "/api/papers/edit": {
+      "get": {
+        "tags": ["Papers"],
+        "summary": "List papers for editing",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaperEditInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/papers/editcard/{paper_id}": {
+      "get": {
+        "tags": ["Papers"],
+        "summary": "Get paper for edit card",
+        "parameters": [
+          {
+            "name": "paper_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaperEditCard"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paper not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Papers"],
+        "summary": "Edit paper card",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "paper_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditPaperCardRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paper card updated successfully"
+          },
+          "400": {
+            "description": "Missing required fields"
+          },
+          "404": {
+            "description": "Paper not found"
+          }
+        }
+      }
+    },
+    "/api/papers/content/{paper_id}": {
+      "get": {
+        "tags": ["Papers"],
+        "summary": "Get paper content for editing",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "paper_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaperContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paper not found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Papers"],
+        "summary": "Edit paper content",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "paper_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditPaperContentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paper content updated successfully"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        }
+      }
+    },
+    "/api/papers/publish/{paper_id}": {
+      "put": {
+        "tags": ["Papers"],
+        "summary": "Publish paper",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "paper_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishPaperRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paper published successfully"
+          },
+          "400": {
+            "description": "Missing required fields"
+          },
+          "404": {
+            "description": "Paper not found"
+          }
+        }
+      }
+    },
+    "/api/papers/createcard": {
+      "post": {
+        "tags": ["Papers"],
+        "summary": "Create a new paper card",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaperCardRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Paper created successfully"
+          },
+          "400": {
+            "description": "Missing required fields"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer"
+          },
+          "user_email": {
+            "type": "string"
+          },
+          "user_first_name": {
+            "type": "string"
+          },
+          "user_last_name": {
+            "type": "string"
+          },
+          "user_password": {
+            "type": "string"
+          },
+          "user_image": {
+            "type": "string"
+          },
+          "user_registration_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user_access": {
+            "type": "string",
+            "enum": ["user", "admin"]
+          },
+          "university": {
+            "type": "string"
+          },
+          "collections_paper_ids": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_email",
+          "user_first_name",
+          "user_last_name",
+          "user_password",
+          "user_access"
+        ]
+      },
+      "ResearchPaper": {
+        "type": "object",
+        "properties": {
+          "paper_id": {
+            "type": "integer"
+          },
+          "paper_created_by_user_id": {
+            "type": "integer"
+          },
+          "short_paper_title": {
+            "type": "string"
+          },
+          "short_description": {
+            "type": "string"
+          },
+          "preview_image": {
+            "type": "string"
+          },
+          "authors_ids": {
+            "type": "string"
+          },
+          "paper_description": {
+            "type": "string"
+          },
+          "paper_html": {
+            "type": "string"
+          },
+          "paper_css": {
+            "type": "string"
+          },
+          "paper_publishDate": {
+            "type": "string"
+          },
+          "paper_editor": {
+            "type": "object"
+          }
+        }
+      },
+      "Author": {
+        "type": "object",
+        "properties": {
+          "author_id": {
+            "type": "integer"
+          },
+          "author_first_name": {
+            "type": "string"
+          },
+          "author_last_name": {
+            "type": "string"
+          },
+          "author_image": {
+            "type": "string"
+          }
+        },
+        "required": ["author_first_name", "author_last_name"]
+      }
+    }
+  }
+}
