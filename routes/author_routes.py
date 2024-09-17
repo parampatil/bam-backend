@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from utils.token_utils import token_required
+from utils.token_utils import is_admin
 from utils.db_connection import get_db_connection
 
 author_bp = Blueprint('author', __name__)
@@ -9,7 +10,7 @@ author_bp = Blueprint('author', __name__)
 def add_author():
     data = request.get_json()
     conn = get_db_connection()
-    conn.execute('INSERT INTO authors (author_first_name, author_last_name, author_image) VALUES (?, ?, ?, ?)',
+    conn.execute('INSERT INTO authors (author_first_name, author_last_name, author_image) VALUES (?, ?, ?)',
                  (data['author_first_name'], data['author_last_name'], data['author_image']))
     conn.commit()
     author_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
@@ -91,18 +92,31 @@ def update_author(author_id):
 
 
 @author_bp.route('/api/authors/<int:author_id>', methods=['DELETE'])
-
+@is_admin
 def delete_author(author_id):
-    # user_id = get_jwt_identity()  # Get the user id from the JWT token
-    # if not is_admin(user_id):
-    #     return jsonify({"message": "Unauthorized"}), 403
     conn = get_db_connection()
-   
     try:
-        conn.execute('DELETE FROM authors WHERE author_id = ?', (author_id,))
+        # Update the authors_ids for all papers associated with the author in a single SQL command
+        papers = conn.execute('SELECT paper_id, authors_ids FROM research_papers WHERE authors_ids LIKE ?', (f'%{author_id}%',)).fetchall()
+        
+        for paper in papers:
+            authors_ids = paper['authors_ids'].split(',')
+            authors_ids = [id for id in authors_ids if id != str(author_id)]
+            new_authors_ids = ','.join(authors_ids)
+            
+            conn.execute('''
+            UPDATE research_papers
+            SET authors_ids = ?
+            WHERE paper_id = ?
+            ''', (new_authors_ids, paper['paper_id']))
+        
         conn.commit()
 
-        if conn.rowcount == 0:
+        # Delete the author from the authors table
+        result = conn.execute('DELETE FROM authors WHERE author_id = ?', (author_id,))
+        conn.commit()
+
+        if result.rowcount == 0:
             return jsonify({"message": "Author not found"}), 404
 
         return jsonify({"message": "Author deleted successfully"}), 200

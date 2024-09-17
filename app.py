@@ -15,5 +15,5 @@ def hello_world():
     return 'Welcome to Building A Mind API!'
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    app.run()
+    app.run(debug=True)
+    # app.run()

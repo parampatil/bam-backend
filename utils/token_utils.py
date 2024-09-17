@@ -21,6 +21,23 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
     return decorated
 
+def is_admin(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 403
+        try:
+            token = token.split(" ")[1]
+            data = jwt.decode(token, Config.SECRET_KEY, algorithms=["HS256"])
+            current_user = get_user_by_id(data['user_id'])
+            if current_user['user_access'] != 'user':  # Change to admin later
+                return jsonify({'message': 'Forbidden'}), 403
+        except:
+            return jsonify({'message': 'Token is invalid!'}), 403
+        return f(*args, **kwargs)
+    return decorated
+
 def create_token(user_id):
     token = jwt.encode({'user_id': user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)}, Config.SECRET_KEY, algorithm="HS256")
     return token
@@ -30,3 +47,9 @@ def get_user_by_id(user_id):
     user = conn.execute('SELECT * FROM users WHERE user_id = ?', (user_id,)).fetchone()
     conn.close()
     return user
+
+def is_email_unique(email):
+    conn = get_db_connection()
+    user = conn.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
+    conn.close()
+    return user is None

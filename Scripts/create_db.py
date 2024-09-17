@@ -1,4 +1,5 @@
 import sqlite3
+from werkzeug.security import generate_password_hash
 
 def create_tables():
     conn = sqlite3.connect('bam.db')
@@ -15,7 +16,7 @@ def create_tables():
         user_password TEXT NOT NULL,
         user_image TEXT,
         user_registration_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        user_access TEXT CHECK(user_access IN ('user', 'team', 'admin')) NOT NULL,
+        user_access TEXT CHECK(user_access IN ('user', 'admin')) NOT NULL,
         university TEXT,
         collections_paper_ids TEXT
     )
@@ -32,7 +33,6 @@ def create_tables():
         short_description TEXT,
         preview_image TEXT,
         authors_ids TEXT,
-        paper_pdf_link TEXT,
         paper_description TEXT,
         paper_html TEXT,         
         paper_css TEXT,            
@@ -42,7 +42,6 @@ def create_tables():
     )
 ''')
 
-
     # Verify the table structure
     c.execute('PRAGMA table_info(research_papers)')
     columns = c.fetchall()
@@ -51,12 +50,7 @@ def create_tables():
     for column in columns:
         print(column)
 
-
-
-
-
     c.execute('DROP TABLE IF EXISTS authors')
-
 
     # Create authors table
     c.execute('''
@@ -64,13 +58,26 @@ def create_tables():
         author_id INTEGER PRIMARY KEY AUTOINCREMENT,
         author_first_name TEXT NOT NULL,
         author_last_name TEXT NOT NULL,
-        author_image TEXT,
-        author_website TEXT
+        author_image TEXT
     )
     ''')
 
     conn.commit()
     conn.close()
+
+    # Insert an admin user
+    conn = sqlite3.connect('bam.db')
+    c = conn.cursor()
+
+    hashed_password = generate_password_hash('password1')
+    c.execute('''
+    INSERT INTO users (user_email, user_first_name, user_last_name, user_password, user_access)
+    VALUES (?, ?, ?, ?, ?)
+    ''', ('admin@gmail.com', 'Admin', 'Account', hashed_password, 'admin'))
+
+    conn.commit()
+    conn.close()
+
 
 if __name__ == '__main__':
     create_tables()
