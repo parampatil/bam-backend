@@ -6,7 +6,7 @@ from routes import register_blueprints
 from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], "supports_credentials": True}})
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000, https://building-a-mind.vercel.app/", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], "supports_credentials": True}})
 app.config.from_object(Config)
 
 # Swagger UI
