@@ -501,3 +501,4 @@ The database used in this application is `bam.db`. It contains the following tab
 - [x] Add update paper method.
 - [x] Write and endpoint to delete an existing user.
 - [ ] Write test for each endpopint in postman.
+- [ ] Update the documentation in readme file.

@@ -6,7 +6,7 @@ from routes import register_blueprints
 from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], "supports_credentials": True}})
 app.config.from_object(Config)
 
 # Swagger UI
@@ -29,5 +29,5 @@ def hello_world():
     return 'Welcome to Building A Mind API!'
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    # app.run()
+    # app.run(debug=True)
+    app.run()
