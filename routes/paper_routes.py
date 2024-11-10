@@ -11,7 +11,7 @@ paper_bp = Blueprint('paper', __name__)
 def list_papers():
     conn = get_db_connection()
     
-    papers = conn.execute('SELECT paper_id, paper_created_by_user_id, short_paper_title, short_description, preview_image, authors_ids, paper_publishDate FROM research_papers').fetchall()
+    papers = conn.execute('SELECT paper_id, paper_created_by_user_id, short_paper_title, short_description, preview_image, authors_ids, paper_publishDate, paper_publication FROM research_papers').fetchall()
 
     result = []
 
@@ -22,6 +22,7 @@ def list_papers():
             'paper_publishDate': paper['paper_publishDate'],
             'short_description': paper['short_description'],
             'preview_image': paper['preview_image'],
+            'paper_publication': paper['paper_publication'],
             'authors': [],
         }
 
@@ -85,7 +86,7 @@ def get_paper(paper_id):
 def list_papers_short_response():
     conn = get_db_connection()
 
-    papers = conn.execute('SELECT paper_id, short_paper_title, paper_publishDate, short_description, preview_image, paper_created_by_user_id FROM research_papers').fetchall()
+    papers = conn.execute('SELECT paper_id, short_paper_title, paper_publishDate, short_description, preview_image, paper_created_by_user_id, paper_publication FROM research_papers').fetchall()
 
     result = []
     for paper in papers:
@@ -96,6 +97,7 @@ def list_papers_short_response():
             'paper_publishDate': paper['paper_publishDate'],
             'short_description': paper['short_description'],
             'preview_image': paper['preview_image'],
+            'paper_publication': paper['paper_publication'],
             'paper_created_by_user_name': f'{user["user_first_name"]} {user["user_last_name"]}' if user else None
         }
         result.append(paper_data)
@@ -109,7 +111,7 @@ def get_paper_for_editcard(paper_id):
     conn = get_db_connection()
     
     paper = conn.execute('''
-        SELECT paper_id, paper_created_by_user_id, short_paper_title, paper_publishDate, short_description, preview_image, authors_ids
+        SELECT paper_id, paper_created_by_user_id, short_paper_title, paper_publishDate, short_description, preview_image, authors_ids, paper_publication
         FROM research_papers
         WHERE paper_id = ?
     ''', (paper_id,)).fetchone()
@@ -131,6 +133,7 @@ def get_paper_for_editcard(paper_id):
         'paper_publishDate': paper['paper_publishDate'],
         'short_description': paper['short_description'],
         'preview_image': paper['preview_image'],
+        'paper_publication': paper['paper_publication'],
         'authors': [],
     }
 
@@ -160,7 +163,7 @@ def edit_paper_card(paper_id):
     conn = get_db_connection()
     data = request.get_json()
     
-    required_fields = ['paper_id', 'short_paper_title', 'paper_publishDate', 'short_description', 'preview_image', 'authors']
+    required_fields = ['paper_id', 'short_paper_title', 'paper_publishDate', 'short_description', 'preview_image', 'authors', 'paper_publication']
     for field in required_fields:
         if field not in data:
             conn.close()
@@ -173,6 +176,7 @@ def edit_paper_card(paper_id):
         'short_description': data['short_description'],
         'preview_image': data['preview_image'],
         'authors_ids': ','.join(map(str, data['authors'])),
+        'paper_publication': data['paper_publication']
     }
 
     conn.execute('''
@@ -181,13 +185,15 @@ def edit_paper_card(paper_id):
             paper_publishDate = ?,
             short_description = ?,
             preview_image = ?,
-            authors_ids = ?
+            authors_ids = ?,
+            paper_publication = ?
         WHERE paper_id = ?
     ''', (paper_data['short_paper_title'],
       paper_data['paper_publishDate'],
       paper_data['short_description'],
       paper_data['preview_image'],
       paper_data['authors_ids'],
+      paper_data['paper_publication'],
       paper_data['paper_id']))
 
     conn.commit()
@@ -328,15 +334,16 @@ def create_paper_card(current_user):
     short_description = data.get('short_description')
     preview_image = data.get('preview_image')
     authors_ids = data.get('authors_ids')
+    paper_publication = data.get('paper_publication')
 
     authors_ids = ','.join(map(str, authors_ids)) if authors_ids else ''
 
     conn = get_db_connection()
     try:
         conn.execute('''
-            INSERT INTO research_papers (paper_created_by_user_id, short_paper_title, paper_publishDate, short_description, preview_image, authors_ids)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (current_user['user_id'], short_paper_title, paper_publishDate, short_description, preview_image, authors_ids))
+            INSERT INTO research_papers (paper_created_by_user_id, short_paper_title, paper_publishDate, short_description, preview_image, authors_ids, paper_publication)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (current_user['user_id'], short_paper_title, paper_publishDate, short_description, preview_image, authors_ids, paper_publication))
 
         conn.commit()
 
